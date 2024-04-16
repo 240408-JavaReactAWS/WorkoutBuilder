@@ -58,7 +58,9 @@ public class PlanService {
 
         if (returnedPlan.getOwner().equals(returnedUser)){
             // This means the proper user is accessing this piece
-            return pd.save(plan);
+            returnedPlan.setName(plan.getName());
+            returnedPlan.setExercises(plan.getExercises());
+            return pd.save(returnedPlan);
         }
         throw new InvalidCredentialsException("Incorrect user attempting to modify workout plan");
 
@@ -114,5 +116,18 @@ public class PlanService {
             return returnedPlan;
         }
         throw new InvalidCredentialsException("Incorrect user attempting to access workout plan");
+    }
+
+    public Plan savePlanByUser(Plan plan, String username) throws NoSuchUserException{
+        Optional<User> possibleUser = ud.findUserByUsername(username);
+
+        if (possibleUser.isEmpty()){
+            throw new NoSuchUserException("No user found with username: " + username);
+        }
+        User returnedUser = possibleUser.get();
+
+        plan.setOwner(returnedUser);
+
+        return pd.save(plan);
     }
 }

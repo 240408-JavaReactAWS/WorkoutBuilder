@@ -28,7 +28,7 @@ public class PlanController {
     public ResponseEntity<List<Plan>> getAllPlansFromUserHandler(
             @RequestHeader(name = "user", required = false) String username){
 
-        if (username.isEmpty()){
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -43,12 +43,12 @@ public class PlanController {
         return new ResponseEntity<>(plans, HttpStatus.OK);
     }
 
-    @GetMapping("id")
+    @GetMapping("{id}")
     public ResponseEntity<Plan> getPlanByIdAndUserHandler(
             @RequestHeader(name = "user", required = false) String username,
             @PathVariable int id
     ){
-        if (username.isEmpty()){
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -70,7 +70,7 @@ public class PlanController {
             @RequestHeader(name = "user", required = false) String username,
             @RequestBody Plan plan
     ){
-        if (username.isEmpty()){
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -87,12 +87,12 @@ public class PlanController {
         return new ResponseEntity<>(updatedPlan, HttpStatus.OK);
     }
 
-    @DeleteMapping("id")
+    @DeleteMapping("{id}")
     public ResponseEntity<Object> deletePlansByUserHandler(
             @RequestHeader(name = "user", required = false) String username,
             @PathVariable int id
     ){
-        if (username.isEmpty()){
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -107,5 +107,25 @@ public class PlanController {
         }
 
         return new ResponseEntity<>(successfullyDeleted, HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<Plan> createPlanByUser(
+            @RequestHeader(name = "user", required = false) String username,
+            @RequestBody Plan plan
+    ){
+        if (username == null){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Plan savedPlan;
+
+        try{
+            savedPlan = ps.savePlanByUser(plan, username);
+        } catch (NoSuchUserException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(savedPlan, HttpStatus.OK);
     }
 }

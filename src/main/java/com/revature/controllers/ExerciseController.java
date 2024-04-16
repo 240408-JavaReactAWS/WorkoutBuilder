@@ -33,7 +33,7 @@ public class ExerciseController {
             @RequestBody Exercise exercise,
             @RequestHeader(name = "user", required = false) String username){
 
-        if (username.isEmpty()){
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -56,7 +56,7 @@ public class ExerciseController {
             @RequestBody Exercise exercise,
             @RequestHeader(name = "user", required = false) String username
     ) {
-        if (username.isEmpty()){
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -74,12 +74,12 @@ public class ExerciseController {
         return new ResponseEntity<>(updatedExercise, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("id")
+    @DeleteMapping("{id}")
     public ResponseEntity<Boolean> deleteExerciseByIdHandler(
             @RequestHeader(name = "user", required = false) String username,
             @PathVariable int id
     ){
-        if (username.isEmpty()){
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
