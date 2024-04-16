@@ -1,11 +1,14 @@
 package com.revature.controllers;
 
+import com.revature.exceptions.InvalidCredentialsException;
+import com.revature.exceptions.NoSuchExerciseException;
+import com.revature.exceptions.NoSuchUserException;
 import com.revature.models.Exercise;
 import com.revature.services.ExerciseService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +26,73 @@ public class ExerciseController {
     @GetMapping
     public List<Exercise> getAllExercisesHandler(){
         return es.getAllExercises();
+    }
+
+    @PostMapping
+    public ResponseEntity<Exercise> createNewExerciseHandler(
+            @RequestBody Exercise exercise,
+            @RequestHeader(name = "user", required = false) String username){
+
+        if (username.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Exercise savedExercise;
+
+        try{
+            savedExercise = es.saveNewExercise(username, exercise);
+
+        } catch(NoSuchUserException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (InvalidCredentialsException e){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        return new ResponseEntity<>(savedExercise, HttpStatus.CREATED);
+    }
+
+    @PutMapping
+    public ResponseEntity<Exercise> updateExistingExerciseHandler(
+            @RequestBody Exercise exercise,
+            @RequestHeader(name = "user", required = false) String username
+    ) {
+        if (username.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Exercise updatedExercise;
+
+        try{
+            updatedExercise = es.updateExercise(username, exercise);
+
+        } catch(NoSuchUserException | NoSuchExerciseException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (InvalidCredentialsException e){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        return new ResponseEntity<>(updatedExercise, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("id")
+    public ResponseEntity<Boolean> deleteExerciseByIdHandler(
+            @RequestHeader(name = "user", required = false) String username,
+            @PathVariable int id
+    ){
+        if (username.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        boolean successfullyDeletedExercise = false;
+
+        try{
+            successfullyDeletedExercise = es.deleteExerciseById(username, id);
+        } catch(NoSuchUserException | NoSuchExerciseException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (InvalidCredentialsException e){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        return new ResponseEntity<>(successfullyDeletedExercise, HttpStatus.OK);
     }
 }
