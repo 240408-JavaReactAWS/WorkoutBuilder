@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("plans")
+@CrossOrigin(origins = {"http://localhost:3000"})
 public class PlanController {
 
     private final PlanService ps;
