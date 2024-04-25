@@ -4,7 +4,9 @@ import com.revature.exceptions.InvalidCredentialsException;
 import com.revature.exceptions.NoSuchExerciseException;
 import com.revature.exceptions.NoSuchUserException;
 import com.revature.models.Exercise;
+import com.revature.models.User;
 import com.revature.services.ExerciseService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,16 +33,18 @@ public class ExerciseController {
     @PostMapping
     public ResponseEntity<Exercise> createNewExerciseHandler(
             @RequestBody Exercise exercise,
-            @RequestHeader(name = "user", required = false) String username){
+            //@RequestHeader(name = "user", required = false) String username
+            HttpSession session){
+        User user = (User) session.getAttribute("user");
 
-        if (username == null){
+        if (user == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         Exercise savedExercise;
 
         try{
-            savedExercise = es.saveNewExercise(username, exercise);
+            savedExercise = es.saveNewExercise(user.getUsername(), exercise);
 
         } catch(NoSuchUserException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -54,16 +58,19 @@ public class ExerciseController {
     @PutMapping
     public ResponseEntity<Exercise> updateExistingExerciseHandler(
             @RequestBody Exercise exercise,
-            @RequestHeader(name = "user", required = false) String username
+//            @RequestHeader(name = "user", required = false) String username
+            HttpSession session
     ) {
-        if (username == null){
+        User user = (User) session.getAttribute("user");
+
+        if (user == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         Exercise updatedExercise;
 
         try{
-            updatedExercise = es.updateExercise(username, exercise);
+            updatedExercise = es.updateExercise(user.getUsername(), exercise);
 
         } catch(NoSuchUserException | NoSuchExerciseException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -76,17 +83,20 @@ public class ExerciseController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Boolean> deleteExerciseByIdHandler(
-            @RequestHeader(name = "user", required = false) String username,
+//            @RequestHeader(name = "user", required = false) String username,
+            HttpSession session,
             @PathVariable int id
     ){
-        if (username == null){
+
+        User user = (User) session.getAttribute("user");
+        if (user == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         boolean successfullyDeletedExercise = false;
 
         try{
-            successfullyDeletedExercise = es.deleteExerciseById(username, id);
+            successfullyDeletedExercise = es.deleteExerciseById(user.getUsername(), id);
         } catch(NoSuchUserException | NoSuchExerciseException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (InvalidCredentialsException e){

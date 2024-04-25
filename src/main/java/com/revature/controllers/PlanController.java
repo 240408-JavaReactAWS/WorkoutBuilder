@@ -4,7 +4,9 @@ import com.revature.exceptions.InvalidCredentialsException;
 import com.revature.exceptions.NoSuchPlanException;
 import com.revature.exceptions.NoSuchUserException;
 import com.revature.models.Plan;
+import com.revature.models.User;
 import com.revature.services.PlanService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,16 +29,19 @@ public class PlanController {
 
     @GetMapping
     public ResponseEntity<List<Plan>> getAllPlansFromUserHandler(
-            @RequestHeader(name = "user", required = false) String username){
+//            @RequestHeader(name = "user", required = false) String username
+            HttpSession session){
 
-        if (username == null){
+        User user = (User) session.getAttribute("user");
+
+        if (user == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         List<Plan> plans = new LinkedList<>();
 
         try{
-            plans = ps.getPlansByUser(username);
+            plans = ps.getPlansByUser(user.getUsername());
         } catch (NoSuchUserException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -46,17 +51,19 @@ public class PlanController {
 
     @GetMapping("{id}")
     public ResponseEntity<Plan> getPlanByIdAndUserHandler(
-            @RequestHeader(name = "user", required = false) String username,
+//            @RequestHeader(name = "user", required = false) String username,
+            HttpSession session,
             @PathVariable int id
     ){
-        if (username == null){
+        User user = (User) session.getAttribute("user");
+        if (user == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         Plan returnedPlan;
 
         try{
-            returnedPlan = ps.getPlanByUserAndId(username, id);
+            returnedPlan = ps.getPlanByUserAndId(user.getUsername(), id);
         } catch( InvalidCredentialsException e){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (NoSuchUserException | NoSuchPlanException e){
@@ -68,17 +75,20 @@ public class PlanController {
 
     @PutMapping
     public ResponseEntity<Plan> updatePlanByUserHandler(
-            @RequestHeader(name = "user", required = false) String username,
+//            @RequestHeader(name = "user", required = false) String username,
+            HttpSession session,
             @RequestBody Plan plan
     ){
-        if (username == null){
+
+        User user = (User) session.getAttribute("user");
+        if (user == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         Plan updatedPlan;
 
         try{
-            updatedPlan = ps.updatePlanByUser(plan, username);
+            updatedPlan = ps.updatePlanByUser(plan, user.getUsername());
         } catch( InvalidCredentialsException e){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (NoSuchUserException | NoSuchPlanException e){
@@ -90,17 +100,20 @@ public class PlanController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Object> deletePlansByUserHandler(
-            @RequestHeader(name = "user", required = false) String username,
+//            @RequestHeader(name = "user", required = false) String username,
+            HttpSession session,
             @PathVariable int id
     ){
-        if (username == null){
+
+        User user = (User) session.getAttribute("user");
+        if (user == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         boolean successfullyDeleted = false;
 
         try{
-            successfullyDeleted = ps.deleteByUserAndId(username, id);
+            successfullyDeleted = ps.deleteByUserAndId(user.getUsername(), id);
         } catch( InvalidCredentialsException e){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (NoSuchUserException | NoSuchPlanException e){
@@ -112,17 +125,20 @@ public class PlanController {
 
     @PostMapping
     public ResponseEntity<Plan> createPlanByUser(
-            @RequestHeader(name = "user", required = false) String username,
+//            @RequestHeader(name = "user", required = false) String username,
+            HttpSession session,
             @RequestBody Plan plan
     ){
-        if (username == null){
+        User user = (User) session.getAttribute("user");
+
+        if (user == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         Plan savedPlan;
 
         try{
-            savedPlan = ps.savePlanByUser(plan, username);
+            savedPlan = ps.savePlanByUser(plan, user.getUsername());
         } catch (NoSuchUserException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
