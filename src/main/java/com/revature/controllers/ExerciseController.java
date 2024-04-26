@@ -16,6 +16,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("exercises")
+@CrossOrigin(origins = {"http://localhost:3000"},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
+        allowCredentials = "true")
 public class ExerciseController {
 
     private final ExerciseService es;
@@ -38,7 +41,7 @@ public class ExerciseController {
         User user = (User) session.getAttribute("user");
 
         if (user == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Exercise savedExercise;
@@ -64,7 +67,7 @@ public class ExerciseController {
         User user = (User) session.getAttribute("user");
 
         if (user == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Exercise updatedExercise;
@@ -90,7 +93,7 @@ public class ExerciseController {
 
         User user = (User) session.getAttribute("user");
         if (user == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         boolean successfullyDeletedExercise = false;

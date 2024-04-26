@@ -17,7 +17,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("plans")
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3000"},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
+        allowCredentials = "true")
 public class PlanController {
 
     private final PlanService ps;
@@ -35,7 +37,7 @@ public class PlanController {
         User user = (User) session.getAttribute("user");
 
         if (user == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         List<Plan> plans = new LinkedList<>();
@@ -57,7 +59,7 @@ public class PlanController {
     ){
         User user = (User) session.getAttribute("user");
         if (user == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Plan returnedPlan;
@@ -82,7 +84,7 @@ public class PlanController {
 
         User user = (User) session.getAttribute("user");
         if (user == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Plan updatedPlan;
@@ -107,7 +109,7 @@ public class PlanController {
 
         User user = (User) session.getAttribute("user");
         if (user == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         boolean successfullyDeleted = false;
@@ -132,7 +134,7 @@ public class PlanController {
         User user = (User) session.getAttribute("user");
 
         if (user == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Plan savedPlan;
@@ -143,6 +145,6 @@ public class PlanController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(savedPlan, HttpStatus.OK);
+        return new ResponseEntity<>(savedPlan, HttpStatus.CREATED);
     }
 }

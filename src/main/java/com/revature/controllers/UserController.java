@@ -3,6 +3,7 @@ package com.revature.controllers;
 import com.revature.exceptions.InvalidCredentialsException;
 import com.revature.exceptions.NoSuchUserException;
 import com.revature.exceptions.UsernameAlreadyTakenException;
+import com.revature.models.Role;
 import com.revature.models.User;
 import com.revature.services.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("users")
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3000"},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
+        allowCredentials = "true")
 public class UserController {
 
     private final UserService us;
@@ -62,10 +65,22 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @GetMapping("admin")
+    public ResponseEntity<User> validateAdmin(HttpSession session){
+        User user = (User) session.getAttribute("user");
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } else if (user.getRole() != Role.ADMIN) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
 
     @PostMapping("logout")
     public ResponseEntity<Void> logoutHandler(HttpSession session){
         session.removeAttribute("user"); // Remove the user from the session
+        session.invalidate();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
