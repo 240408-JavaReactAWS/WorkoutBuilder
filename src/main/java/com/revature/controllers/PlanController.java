@@ -19,6 +19,7 @@ import java.util.List;
 @RequestMapping("plans")
 @CrossOrigin(origins = {"http://localhost:3000", "http://workout-builder-test.s3-website-us-east-1.amazonaws.com"},
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
+        allowedHeaders = {"username", "Content-Type"},
         allowCredentials = "true")
 public class PlanController {
 
@@ -31,19 +32,20 @@ public class PlanController {
 
     @GetMapping
     public ResponseEntity<List<Plan>> getAllPlansFromUserHandler(
-//            @RequestHeader(name = "user", required = false) String username
-            HttpSession session){
+            @RequestHeader(name = "username") String username
+//            HttpSession session
+    ){
 
-        User user = (User) session.getAttribute("user");
+//        User user = (User) session.getAttribute("user");
 
-        if (user == null){
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         List<Plan> plans = new LinkedList<>();
 
         try{
-            plans = ps.getPlansByUser(user.getUsername());
+            plans = ps.getPlansByUser(username);
         } catch (NoSuchUserException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -53,19 +55,19 @@ public class PlanController {
 
     @GetMapping("{id}")
     public ResponseEntity<Plan> getPlanByIdAndUserHandler(
-//            @RequestHeader(name = "user", required = false) String username,
-            HttpSession session,
+            @RequestHeader(name = "username") String username,
+//            HttpSession session,
             @PathVariable int id
     ){
-        User user = (User) session.getAttribute("user");
-        if (user == null){
+//        User user = (User) session.getAttribute("user");
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Plan returnedPlan;
 
         try{
-            returnedPlan = ps.getPlanByUserAndId(user.getUsername(), id);
+            returnedPlan = ps.getPlanByUserAndId(username, id);
         } catch( InvalidCredentialsException e){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (NoSuchUserException | NoSuchPlanException e){
@@ -77,20 +79,20 @@ public class PlanController {
 
     @PutMapping
     public ResponseEntity<Plan> updatePlanByUserHandler(
-//            @RequestHeader(name = "user", required = false) String username,
-            HttpSession session,
+            @RequestHeader(name = "username") String username,
+//            HttpSession session,
             @RequestBody Plan plan
     ){
 
-        User user = (User) session.getAttribute("user");
-        if (user == null){
+//        User user = (User) session.getAttribute("user");
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Plan updatedPlan;
 
         try{
-            updatedPlan = ps.updatePlanByUser(plan, user.getUsername());
+            updatedPlan = ps.updatePlanByUser(plan, username);
         } catch( InvalidCredentialsException e){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (NoSuchUserException | NoSuchPlanException e){
@@ -102,20 +104,20 @@ public class PlanController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Object> deletePlansByUserHandler(
-//            @RequestHeader(name = "user", required = false) String username,
-            HttpSession session,
+            @RequestHeader(name = "username") String username,
+//            HttpSession session,
             @PathVariable int id
     ){
 
-        User user = (User) session.getAttribute("user");
-        if (user == null){
+//        User user = (User) session.getAttribute("user");
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         boolean successfullyDeleted = false;
 
         try{
-            successfullyDeleted = ps.deleteByUserAndId(user.getUsername(), id);
+            successfullyDeleted = ps.deleteByUserAndId(username, id);
         } catch( InvalidCredentialsException e){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (NoSuchUserException | NoSuchPlanException e){
@@ -127,20 +129,20 @@ public class PlanController {
 
     @PostMapping
     public ResponseEntity<Plan> createPlanByUser(
-//            @RequestHeader(name = "user", required = false) String username,
-            HttpSession session,
+            @RequestHeader(name = "username") String username,
+//            HttpSession session,
             @RequestBody Plan plan
     ){
-        User user = (User) session.getAttribute("user");
+//        User user = (User) session.getAttribute("user");
 
-        if (user == null){
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Plan savedPlan;
 
         try{
-            savedPlan = ps.savePlanByUser(plan, user.getUsername());
+            savedPlan = ps.savePlanByUser(plan, username);
         } catch (NoSuchUserException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

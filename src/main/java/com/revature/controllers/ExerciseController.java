@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping("exercises")
 @CrossOrigin(origins = {"http://localhost:3000", "http://workout-builder-test.s3-website-us-east-1.amazonaws.com"},
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
+        allowedHeaders = {"username", "Content-Type"},
         allowCredentials = "true")
 public class ExerciseController {
 
@@ -36,18 +37,19 @@ public class ExerciseController {
     @PostMapping
     public ResponseEntity<Exercise> createNewExerciseHandler(
             @RequestBody Exercise exercise,
-            //@RequestHeader(name = "user", required = false) String username
-            HttpSession session){
-        User user = (User) session.getAttribute("user");
+            @RequestHeader(name = "username") String username
+//            HttpSession session
+    ){
+//        User user = (User) session.getAttribute("user");
 
-        if (user == null){
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Exercise savedExercise;
 
         try{
-            savedExercise = es.saveNewExercise(user.getUsername(), exercise);
+            savedExercise = es.saveNewExercise(username, exercise);
 
         } catch(NoSuchUserException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -61,19 +63,19 @@ public class ExerciseController {
     @PutMapping
     public ResponseEntity<Exercise> updateExistingExerciseHandler(
             @RequestBody Exercise exercise,
-//            @RequestHeader(name = "user", required = false) String username
-            HttpSession session
+            @RequestHeader(name = "username") String username
+//            HttpSession session
     ) {
-        User user = (User) session.getAttribute("user");
 
-        if (user == null){
+
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         Exercise updatedExercise;
 
         try{
-            updatedExercise = es.updateExercise(user.getUsername(), exercise);
+            updatedExercise = es.updateExercise(username, exercise);
 
         } catch(NoSuchUserException | NoSuchExerciseException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -86,20 +88,20 @@ public class ExerciseController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Boolean> deleteExerciseByIdHandler(
-//            @RequestHeader(name = "user", required = false) String username,
-            HttpSession session,
+            @RequestHeader(name = "username") String username,
+//            HttpSession session,
             @PathVariable int id
     ){
 
-        User user = (User) session.getAttribute("user");
-        if (user == null){
+//        User user = (User) session.getAttribute("user");
+        if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         boolean successfullyDeletedExercise = false;
 
         try{
-            successfullyDeletedExercise = es.deleteExerciseById(user.getUsername(), id);
+            successfullyDeletedExercise = es.deleteExerciseById(username, id);
         } catch(NoSuchUserException | NoSuchExerciseException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (InvalidCredentialsException e){
