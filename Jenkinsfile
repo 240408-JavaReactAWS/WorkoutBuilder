@@ -14,7 +14,7 @@ pipeline {
 
     stage('Docker Build') {
       steps {
-        sh 'sudo docker build -t workout-builder-demo . '
+        sh 'docker build -t workout-builder-demo . '
       }
     }
 
@@ -25,7 +25,7 @@ pipeline {
         DB_PASSWORD = 'password'
       }
       steps {
-        sh 'sudo docker run -d -p 80:8080 -e DB_URL=${DB_URL} -e DB_USERNAME=${DB_USERNAME} -e DB_PASSWORD=${DB_PASSWORD} workout-builder-demo'
+        sh 'docker run -d -p 80:8080 -e DB_URL=${DB_URL} -e DB_USERNAME=${DB_USERNAME} -e DB_PASSWORD=${DB_PASSWORD} workout-builder-demo'
       }
     }
 
