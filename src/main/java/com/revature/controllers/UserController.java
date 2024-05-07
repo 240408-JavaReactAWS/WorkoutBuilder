@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("users")
-@CrossOrigin(origins = {"http://localhost:3000", "http://workout-builder-test.s3-website-us-east-1.amazonaws.com"},
+@CrossOrigin(origins = {"http://localhost:3000", "http://workout-builder-240408.s3-website-us-east-1.amazonaws.com"},
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
         allowedHeaders = {"username", "Content-Type"},
         allowCredentials = "true")
@@ -28,9 +28,7 @@ public class UserController {
     }
 
     @PostMapping("register")
-    public ResponseEntity<User> registerNewUserHandler(@RequestBody User user
-//                                                       HttpSession session
-    ){
+    public ResponseEntity<User> registerNewUserHandler(@RequestBody User user){
         User savedUser;
 
         try{
@@ -45,9 +43,7 @@ public class UserController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<User> loginNewUserHandler(@RequestBody User user
-//                                                    HttpSession session
-    ){
+    public ResponseEntity<User> loginNewUserHandler(@RequestBody User user){
         User loggedInUser;
 
         try{
@@ -71,17 +67,11 @@ public class UserController {
     }
 
     @GetMapping("admin")
-    public ResponseEntity<User> validateAdmin(@RequestHeader(name = "username") String username){
-//        User user = (User) session.getAttribute("user");
-        if (username == null){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<User> validateAdmin(@RequestHeader(name="username") String username){
         User user = us.getUserByUsername(username);
         if (user == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        else if (user.getRole() != Role.ADMIN) {
+        } else if (user.getRole() != Role.ADMIN) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(user, HttpStatus.OK);

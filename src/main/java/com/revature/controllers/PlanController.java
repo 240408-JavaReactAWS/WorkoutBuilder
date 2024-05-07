@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("plans")
-@CrossOrigin(origins = {"http://localhost:3000", "http://workout-builder-test.s3-website-us-east-1.amazonaws.com"},
+@CrossOrigin(origins = {"http://localhost:3000", "http://workout-builder-240408.s3-website-us-east-1.amazonaws.com"},
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
         allowedHeaders = {"username", "Content-Type"},
         allowCredentials = "true")
@@ -32,11 +32,9 @@ public class PlanController {
 
     @GetMapping
     public ResponseEntity<List<Plan>> getAllPlansFromUserHandler(
-            @RequestHeader(name = "username") String username
-//            HttpSession session
-    ){
+            @RequestHeader(name="username") String username){
 
-//        User user = (User) session.getAttribute("user");
+
 
         if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -55,11 +53,10 @@ public class PlanController {
 
     @GetMapping("{id}")
     public ResponseEntity<Plan> getPlanByIdAndUserHandler(
-            @RequestHeader(name = "username") String username,
-//            HttpSession session,
+            @RequestHeader(name="username") String username,
             @PathVariable int id
     ){
-//        User user = (User) session.getAttribute("user");
+
         if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -79,12 +76,11 @@ public class PlanController {
 
     @PutMapping
     public ResponseEntity<Plan> updatePlanByUserHandler(
-            @RequestHeader(name = "username") String username,
-//            HttpSession session,
+            @RequestHeader(name="username") String username,
             @RequestBody Plan plan
     ){
 
-//        User user = (User) session.getAttribute("user");
+
         if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -104,12 +100,11 @@ public class PlanController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Object> deletePlansByUserHandler(
-            @RequestHeader(name = "username") String username,
-//            HttpSession session,
+            @RequestHeader(name="username") String username,
             @PathVariable int id
     ){
 
-//        User user = (User) session.getAttribute("user");
+
         if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -129,11 +124,10 @@ public class PlanController {
 
     @PostMapping
     public ResponseEntity<Plan> createPlanByUser(
-            @RequestHeader(name = "username") String username,
-//            HttpSession session,
+            @RequestHeader(name="username") String username,
             @RequestBody Plan plan
     ){
-//        User user = (User) session.getAttribute("user");
+
 
         if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

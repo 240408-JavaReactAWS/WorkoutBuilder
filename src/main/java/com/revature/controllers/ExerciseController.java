@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("exercises")
-@CrossOrigin(origins = {"http://localhost:3000", "http://workout-builder-test.s3-website-us-east-1.amazonaws.com"},
+@CrossOrigin(origins = {"http://localhost:3000", "http://workout-builder-240408.s3-website-us-east-1.amazonaws.com"},
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
         allowedHeaders = {"username", "Content-Type"},
         allowCredentials = "true")
@@ -37,10 +37,8 @@ public class ExerciseController {
     @PostMapping
     public ResponseEntity<Exercise> createNewExerciseHandler(
             @RequestBody Exercise exercise,
-            @RequestHeader(name = "username") String username
-//            HttpSession session
-    ){
-//        User user = (User) session.getAttribute("user");
+            @RequestHeader(name="username") String username){
+
 
         if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -63,8 +61,7 @@ public class ExerciseController {
     @PutMapping
     public ResponseEntity<Exercise> updateExistingExerciseHandler(
             @RequestBody Exercise exercise,
-            @RequestHeader(name = "username") String username
-//            HttpSession session
+            @RequestHeader(name="username") String username
     ) {
 
 
@@ -88,12 +85,10 @@ public class ExerciseController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Boolean> deleteExerciseByIdHandler(
-            @RequestHeader(name = "username") String username,
-//            HttpSession session,
+            @RequestHeader(name="username") String username,
             @PathVariable int id
     ){
 
-//        User user = (User) session.getAttribute("user");
         if (username == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
