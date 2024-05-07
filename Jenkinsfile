@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'mvn clean -D DB_URL=jdbc:postgresql://revature-sample-database.cx4mu6k601bl.us-east-1.rds.amazonaws.com:5432/postgres -D DB_USERNAME=postgres -D DB_PASSWORD=password package'
+        sh 'mvn clean -D DB_URL=${DB_URL} -D DB_USERNAME=${DB_USERNAME} -D DB_PASSWORD=${DB_PASSWORD} package'
         sh 'docker build -t workout-builder-demo .'
       }
     }
@@ -16,7 +16,7 @@ pipeline {
 
     stage('Deploy') {
       steps {
-        sh 'docker run -d -p 80:8080 --name workout-builder-container -e DB_URL=jdbc:postgresql://revature-sample-database.cx4mu6k601bl.us-east-1.rds.amazonaws.com:5432/postgres -e DB_USERNAME=postgres -e DB_PASSWORD=password workout-builder-demo'
+        sh 'docker run -d -p 80:8080 --name workout-builder-container -e DB_URL=${DB_URL} -e DB_USERNAME=${DB_USERNAME} -e DB_PASSWORD=${DB_PASSWORD} workout-builder-demo'
       }
     }
 
